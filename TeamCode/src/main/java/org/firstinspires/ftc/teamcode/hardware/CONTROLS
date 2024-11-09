@@ -1,0 +1,46 @@
+Legend:
+    [STICK]: Joystick control; push up: forward/up, etc.
+    [HOLD]: Runs while held down
+    [CLICK]: Runs after clicked once
+
+Gamepad 1:
+
+Drive:
+    [STICK] L/R Joysticks: Field Centric with Mechanum
+
+Intake:
+    Intake Rollers:
+        Run: [HOLD] Right Trigger
+    Intake Slides:
+        Base Preset: [CLICK] DPad Down
+        Transfer Preset: [CLICK] DPad Right
+        Extend Preset: [CLICK] DPad Up
+    Intake Tilt:
+        Swap Preset: [CLICK] Right Bumper
+
+
+Gamepad 2:
+
+Outtake:
+    Outtake Slides:
+        Base Preset: [CLICK] DPad Down
+        Transfer Preset: [CLICK] DPad Right
+        Extend Preset: [CLICK] DPad Up
+
+        Manual Control: [STICK Y] Left Stick
+    Outtake Bucket Tilt:
+        Swap Preset: [CLICK] Right Bumper
+
+Intake
+    Intake Slides
+        Manual Control: [STICK Y] Right Stick
+
+
+
+
+
+
+
+
+
+

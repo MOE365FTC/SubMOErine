@@ -27,6 +27,6 @@ public class Transfer {
     }
 
     public void actuate() {
-        if (Intake.intoTransfer) roller.setPower(rollPower);
+//        if (Intake.intoTransfer) roller.setPower(rollPower);
     }
 }

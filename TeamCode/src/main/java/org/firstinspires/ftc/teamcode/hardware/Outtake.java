@@ -6,16 +6,24 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Outtake {
     //DEVICES
+    Servo outtakeClaw;
     DcMotor outtakeSlides;
-    Servo outtakeBucket;
+    
+    public enum OuttakeSlidePositions {
+        BASE,
+        RUNG,
+        SCORE_RUNG,
+        BASKET
+    }
 
-    //PRESETS
-    public static final double outtakeSlidesPower = 0.7, outtakeBucketPower = 0.7; //NEEDS TESTING
-    public static final double outtakeTilt = 0.7, transferTilt = 0.2; //NEEDS TESTING
-    public static final int outtakeSlidesBase = 0, outtakeSlidesTransfer = 200, outtakeSlidesExtend = 1000; //NEEDS TESTING
 
-    public static int outtakeSlidesTarget = outtakeSlidesBase;
-    public static final int outtakeSlidesTargetOffset = 25;
+    public OuttakeSlidePositions curOuttakePos = OuttakeSlidePositions.BASE;
+    public boolean isClawOpen = true;
+    // PRESETS
+    // TODO MAKE THIS STATIC ASAP AND CHANGE VALUES!!
+    // FIXME EVERYTHING IS -1 [DO NOT RUN]
+    public final int OuttakeSlideBase = -1, OuttakeSlideRung = -1, OuttakeSlideScoreRung = -1, OuttakeSlideBasket = -1;
+    public final double ClawOpen = -1.0, ClawClose = -1.0;
 
     //USAGE
     Gamepad gamepad1, gamepad2;
@@ -23,35 +31,43 @@ public class Outtake {
     public Outtake (HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry) {
         this.gamepad2 = gamepad2;
 
-        outtakeBucket = hardwareMap.get(Servo.class, "tilt");
-        outtakeSlides = hardwareMap.get(DcMotorEx.class, "intakeSlides");
+        outtakeSlides = hardwareMap.get(DcMotor.class, "outtakeSlides");
+        outtakeClaw = hardwareMap.get(Servo.class, "claw");
 
         outtakeSlides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        outtakeSlides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
+
     public void actuate() {
-        //swap bucket preset
-        if (gamepad2.left_bumper) swapBucketPreset();
+        if(isClawOpen)  outtakeClaw.setPosition(ClawOpen);
+        else            outtakeClaw.setPosition(ClawClose);
 
-        //outtake slides preset
-        if(gamepad2.dpad_up) outtakeSlidesTarget = outtakeSlidesExtend;
-        else if(gamepad2.dpad_right) outtakeSlidesTarget = outtakeSlidesTransfer;
-        else if(gamepad2.dpad_down) outtakeSlidesTarget = outtakeSlidesBase;
+        if(this.gamepad2.dpad_down)     curOuttakePos = OuttakeSlidePositions.BASE;
+        if(this.gamepad2.dpad_up)       curOuttakePos = OuttakeSlidePositions.RUNG;
+        if(this.gamepad2.dpad_right)    curOuttakePos = OuttakeSlidePositions.SCORE_RUNG;
 
+        if(this.gamepad2.right_bumper)  isClawOpen = !isClawOpen;
 
-        //outtake manual control
-        if(gamepad2.left_stick_y > 0.3) outtakeSlidesTarget += outtakeSlidesTargetOffset;
-        else if(gamepad2.left_stick_y < -0.3) outtakeSlidesTarget -= outtakeSlidesTargetOffset;
+        switch (curOuttakePos) {
+            case BASE:
+                outtakeSlides.setTargetPosition(OuttakeSlideBase);
 
-        extendOuttakeSlides(outtakeSlidesTarget);
+            case RUNG:
+                outtakeSlides.setTargetPosition(OuttakeSlideRung);
+
+            case SCORE_RUNG: {
+                // FIXME UP FOR INTERPRETATION
+                outtakeSlides.setTargetPosition(OuttakeSlideScoreRung);
+                isClawOpen = true;
+            }
+
+            case BASKET:
+                outtakeSlides.setTargetPosition(OuttakeSlideBasket);
+        }
     }
 
-    public void extendOuttakeSlides(int targetPos){
-        outtakeSlides.setTargetPosition(targetPos);
-        outtakeSlides.setPower(outtakeSlidesPower);
-    }
-    public void swapBucketPreset(){
-        if(outtakeBucket.getPosition()== transferTilt) outtakeBucket.setPosition(outtakeTilt);
-        else if(outtakeBucket.getPosition()== outtakeTilt) outtakeBucket.setPosition(transferTilt);
-        else telemetry.addData("Outtake bucket rot pos(not tranfer or outtake preset):", outtakeBucket.getPosition()); // shouldn't happen
+    public void testActuate(double position) {
+        //outtake claw
+        outtakeClaw.setPosition(position);
     }
 }

@@ -8,8 +8,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Intake {
     //DEVICES
-    Servo yaw, pitch, wrist;
+    Servo shoulder, elbow, wrist;
     Servo linkage;
+    Servo intakeClaw;
 
     public enum ArmPositions {
         BASE,
@@ -23,10 +24,12 @@ public class Intake {
     public final double YawBase = -1.0, YawSample = -1.0, YawHumanPlayer = -1.0;
     public final double PitchBase = -1.0, PitchSample = -1.0, PitchHumanPlayer = -1.0;
     public final double WristVertical = -1.0, WristHorizontal = -1.0;
-    public final double LinkageOut = -1.0, LinkageIn = -1.0;
+    public final double LinkageOut = -1.0, LinkageIn = -1.0, LinkageHumanPlayer = -1.0;
+    public final double ClawOpen = -1.0, ClawClose = -1.0;
 
     public ArmPositions curArmPosition = ArmPositions.BASE;
 
+    public boolean isClawOpen = true;
     public int fineControlSteps = 1;
 
     //USAGE
@@ -36,10 +39,11 @@ public class Intake {
     public Intake(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry) {
         this.gamepad1 = gamepad1;
 
-        yaw = hardwareMap.get(Servo.class, "yaw");
-        pitch = hardwareMap.get(Servo.class, "pitch");
-        wrist = hardwareMap.get(Servo.class, "wrist");
-        linkage = hardwareMap.get(Servo.class, "linkage");
+        shoulder = hardwareMap.get(Servo.class, "shoulderServo");
+        elbow = hardwareMap.get(Servo.class, "elbowServo");
+        wrist = hardwareMap.get(Servo.class, "wristServo");
+        linkage = hardwareMap.get(Servo.class, "linkageServo");
+        intakeClaw = hardwareMap.get(Servo.class, "intakeClawServo");
     }
 
     public void actuate() {
@@ -53,32 +57,38 @@ public class Intake {
         if(this.gamepad1.y && curArmPosition == ArmPositions.SAMPLE) linkage.setPosition(linkage.getPosition() + fineControlSteps);
         if(this.gamepad1.a && curArmPosition == ArmPositions.SAMPLE) linkage.setPosition(linkage.getPosition() - fineControlSteps);
 
+        if(this.gamepad1.right_bumper)  isClawOpen = !isClawOpen;
+        if(isClawOpen)  intakeClaw.setPosition(ClawOpen);
+        else            intakeClaw.setPosition(ClawClose);
+
         switch (curArmPosition) {
             case BASE: {
                 linkage.setPosition(LinkageIn);
-                yaw.setPosition(YawBase);
-                pitch.setPosition(PitchBase);
+                shoulder.setPosition(YawBase);
+                elbow.setPosition(PitchBase);
                 wrist.setPosition(WristVertical);
             }
 
             case SAMPLE: {
                 linkage.setPosition(LinkageOut);
-                yaw.setPosition(YawSample);
-                pitch.setPosition(PitchSample);
+                shoulder.setPosition(YawSample);
+                elbow.setPosition(PitchSample);
             }
 
             case HUMAN_PLAYER: {
-                yaw.setPosition(YawHumanPlayer);
-                pitch.setPosition(PitchHumanPlayer);
+                linkage.setPosition(LinkageHumanPlayer);
+                shoulder.setPosition(YawHumanPlayer);
+                elbow.setPosition(PitchHumanPlayer);
             }
         }
     }
 
     public void testActuate(double position) {
-        yaw.setPosition(position);
-        pitch.setPosition(position);
+        shoulder.setPosition(position);
+        elbow.setPosition(position);
         wrist.setPosition(position);
         linkage.setPosition(position);
+        intakeClaw.setPosition(position);
     }
 
 }

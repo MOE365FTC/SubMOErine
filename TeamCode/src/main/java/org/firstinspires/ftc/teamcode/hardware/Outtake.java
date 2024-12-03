@@ -6,7 +6,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Outtake {
     //DEVICES
-    Servo outtakeClaw;
+    Servo outtakeClaw, outtakeTilt;
     DcMotor outtakeSlides;
     
     public enum OuttakeSlidePositions {
@@ -31,22 +31,22 @@ public class Outtake {
     public Outtake (HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry) {
         this.gamepad2 = gamepad2;
 
-        outtakeSlides = hardwareMap.get(DcMotor.class, "outtakeSlides");
-        outtakeClaw = hardwareMap.get(Servo.class, "claw");
+        outtakeSlides = hardwareMap.get(DcMotor.class, "outtakeSlideMotor");
+        outtakeTilt = hardwareMap.get(Servo.class, "outtakeTiltServo");
+        outtakeClaw = hardwareMap.get(Servo.class, "outtakeClawServo");
 
         outtakeSlides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         outtakeSlides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     public void actuate() {
-        if(isClawOpen)  outtakeClaw.setPosition(ClawOpen);
-        else            outtakeClaw.setPosition(ClawClose);
-
         if(this.gamepad2.dpad_down)     curOuttakePos = OuttakeSlidePositions.BASE;
         if(this.gamepad2.dpad_up)       curOuttakePos = OuttakeSlidePositions.RUNG;
         if(this.gamepad2.dpad_right)    curOuttakePos = OuttakeSlidePositions.SCORE_RUNG;
 
         if(this.gamepad2.right_bumper)  isClawOpen = !isClawOpen;
+        if(isClawOpen)  outtakeClaw.setPosition(ClawOpen);
+        else            outtakeClaw.setPosition(ClawClose);
 
         switch (curOuttakePos) {
             case BASE:
@@ -67,7 +67,7 @@ public class Outtake {
     }
 
     public void testActuate(double position) {
-        //outtake claw
         outtakeClaw.setPosition(position);
+        outtakeTilt.setPosition(position);
     }
 }

@@ -4,7 +4,7 @@ Legend:
 
 Gamepad 1:
 Drive:
-    [STICK] L/R Joysticks: Field Centric with Mechanum
+    [STICK] L/R Joysticks: Field Centric with Mecanum
 
 Intake:
     Intake Arm & Slides:
@@ -14,6 +14,9 @@ Intake:
     Intake Slides:
         Fine Control Up: [CLICK] Y
         Fine Control Down: [CLICK] A
+
+    Intake Claw:
+        Claw Toggle: [CLICK] Right Bumper
 
 
 Gamepad 2:

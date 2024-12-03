@@ -8,7 +8,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Ascent {
     //DEVICES
-    DcMotor ascentMotorA, ascentMotorB;
+    DcMotor ascentMotor;
 
 
     //PRESETS
@@ -17,7 +17,7 @@ public class Ascent {
     Gamepad gamepad1, gamepad2;
     Telemetry telemetry;
     public Ascent (HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry) {
-
+        ascentMotor = hardwareMap.get(DcMotor.class, "ascentMotor");
     }
 
     public void actuate() {

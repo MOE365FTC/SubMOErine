@@ -1,0 +1,30 @@
+Legend:
+    [STICK]: Joystick control; push up: forward/up, etc.
+    [CLICK]: Runs after clicked once
+
+Gamepad 1:
+Drive:
+    [STICK] L/R Joysticks: Field Centric with Mecanum
+
+Intake:
+    Intake Arm & Slides:
+        Base Preset: [CLICK] DPad Down
+        Sample Preset: [CLICK] DPad Up
+        Human Player Preset: [CLICK] DPad Left
+    Intake Slides:
+        Fine Control Up: [CLICK] Y
+        Fine Control Down: [CLICK] A
+
+    Intake Claw:
+        Claw Toggle: [CLICK] Right Bumper
+
+
+Gamepad 2:
+Outtake:
+    Outtake Slides:
+        Base Preset: [CLICK] DPad Down
+        Score Rung Preset: [CLICK] DPad Right
+        Rung Preset: [CLICK] DPad Up
+
+    Outtake Claw:
+        Claw Toggle: [CLICK] Right Bumper

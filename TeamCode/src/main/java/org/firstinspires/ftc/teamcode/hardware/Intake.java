@@ -21,15 +21,16 @@ public class Intake {
     //PRESETS
     // TODO MAKE THIS STATIC ASAP AND CHANGE VALUES!!
     // FIXME EVERYTHING IS -1 [DO NOT RUN]
-    public final double YawBase = -1.0, YawSample = -1.0, YawHumanPlayer = -1.0;
-    public final double PitchBase = -1.0, PitchSample = -1.0, PitchHumanPlayer = -1.0;
-    public final double WristVertical = -1.0, WristHorizontal = -1.0;
-    public final double LinkageOut = -1.0, LinkageIn = -1.0, LinkageHumanPlayer = -1.0;
-    public final double ClawOpen = -1.0, ClawClose = -1.0;
+    public final double YawBase = 0.45, YawSample = 1.0, YawHumanPlayer = 0.25, YawTransfer = 0.0;
+    public final double PitchBase = 0.09, PitchSample = 0.98, PitchHumanPlayer = -1.0;
+    public final double LinkageOut = 0.18, LinkageIn = 0.73, LinkageTransfer = 0.5;
+    public final double WristAxial = 0.0, WristTransverse = 0.3;
+    public final double ClawOpen = 0.3, ClawClose = 0.0;
 
     public ArmPositions curArmPosition = ArmPositions.BASE;
 
     public boolean isClawOpen = true;
+    public boolean g1RightBumperPressed = false;
     public int fineControlSteps = 1;
 
     //USAGE
@@ -51,13 +52,19 @@ public class Intake {
         if(this.gamepad1.dpad_up) curArmPosition = ArmPositions.SAMPLE;
         if(this.gamepad1.dpad_left) curArmPosition = ArmPositions.HUMAN_PLAYER;
 
-        if(this.gamepad1.b && curArmPosition == ArmPositions.SAMPLE) wrist.setPosition(WristVertical);
-        if(this.gamepad1.x && curArmPosition == ArmPositions.SAMPLE) wrist.setPosition(WristHorizontal);
+        if(this.gamepad1.b && curArmPosition == ArmPositions.SAMPLE) wrist.setPosition(WristAxial);
+        if(this.gamepad1.x && curArmPosition == ArmPositions.SAMPLE) wrist.setPosition(WristTransverse);
 
         if(this.gamepad1.y && curArmPosition == ArmPositions.SAMPLE) linkage.setPosition(linkage.getPosition() + fineControlSteps);
         if(this.gamepad1.a && curArmPosition == ArmPositions.SAMPLE) linkage.setPosition(linkage.getPosition() - fineControlSteps);
 
-        if(this.gamepad1.right_bumper)  isClawOpen = !isClawOpen;
+        if(this.gamepad1.right_bumper && !g1RightBumperPressed) {
+            g1RightBumperPressed = true;
+            isClawOpen = !isClawOpen;
+        }
+        else if(!this.gamepad1.right_bumper) {
+            g1RightBumperPressed = false;
+        }
         if(isClawOpen)  intakeClaw.setPosition(ClawOpen);
         else            intakeClaw.setPosition(ClawClose);
 
@@ -66,7 +73,7 @@ public class Intake {
                 linkage.setPosition(LinkageIn);
                 shoulder.setPosition(YawBase);
                 elbow.setPosition(PitchBase);
-                wrist.setPosition(WristVertical);
+                wrist.setPosition(WristAxial);
             }
 
             case SAMPLE: {
@@ -76,7 +83,7 @@ public class Intake {
             }
 
             case HUMAN_PLAYER: {
-                linkage.setPosition(LinkageHumanPlayer);
+                linkage.setPosition(LinkageIn);
                 shoulder.setPosition(YawHumanPlayer);
                 elbow.setPosition(PitchHumanPlayer);
             }

@@ -19,5 +19,7 @@ public class Teleop extends OpMode {
         robot.chassis.imuTelemetry(telemetry);
         robot.chassis.odoTelemetry(telemetry);
         robot.chassis.fieldCentricDrive();
+        robot.outtake.actuate();
+        robot.intake.actuate();
     }
 }

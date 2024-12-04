@@ -22,7 +22,7 @@ public class Intake {
     // TODO MAKE THIS STATIC ASAP AND CHANGE VALUES!!
     // FIXME EVERYTHING IS -1 [DO NOT RUN]
     public final double YawBase = 0.45, YawSample = 1.0, YawHumanPlayer = 0.25, YawTransfer = 0.0;
-    public final double PitchBase = 0.09, PitchSample = 0.98, PitchHumanPlayer = -1.0;
+    public final double PitchBase = 0.09, PitchSample = 0.98, PitchHumanPlayer = 0.8;
     public final double LinkageOut = 0.18, LinkageIn = 0.73, LinkageTransfer = 0.5;
     public final double WristAxial = 0.0, WristTransverse = 0.3;
     public final double ClawOpen = 0.3, ClawClose = 0.0;
@@ -49,7 +49,10 @@ public class Intake {
 
     public void actuate() {
         if(this.gamepad1.dpad_down) curArmPosition = ArmPositions.BASE;
-        if(this.gamepad1.dpad_up) curArmPosition = ArmPositions.SAMPLE;
+        if(this.gamepad1.dpad_up){
+            curArmPosition = ArmPositions.SAMPLE;
+            isClawOpen = true;
+        }
         if(this.gamepad1.dpad_left) curArmPosition = ArmPositions.HUMAN_PLAYER;
 
         if(this.gamepad1.b && curArmPosition == ArmPositions.SAMPLE) wrist.setPosition(WristAxial);
@@ -74,18 +77,21 @@ public class Intake {
                 shoulder.setPosition(YawBase);
                 elbow.setPosition(PitchBase);
                 wrist.setPosition(WristAxial);
+                break;
             }
 
             case SAMPLE: {
                 linkage.setPosition(LinkageOut);
                 shoulder.setPosition(YawSample);
                 elbow.setPosition(PitchSample);
+                break;
             }
 
             case HUMAN_PLAYER: {
                 linkage.setPosition(LinkageIn);
                 shoulder.setPosition(YawHumanPlayer);
                 elbow.setPosition(PitchHumanPlayer);
+                break;
             }
         }
     }

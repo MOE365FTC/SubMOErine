@@ -11,6 +11,7 @@ Intake:
         Base Preset: [CLICK] DPad Down
         Sample Preset: [CLICK] DPad Up
         Human Player Preset: [CLICK] DPad Left
+        Wrist
     Intake Slides:
         Fine Control Up: [CLICK] Y
         Fine Control Down: [CLICK] A
@@ -22,9 +23,10 @@ Intake:
 Gamepad 2:
 Outtake:
     Outtake Slides:
-        Base Preset: [CLICK] DPad Down
-        Score Rung Preset: [CLICK] DPad Right
-        Rung Preset: [CLICK] DPad Up
+        Wall Preset: [CLICK] DPad Down
+        Chamber Preset: [CLICK] DPad Left
+        Score Chamber Preset: [CLICK] DPad Up
+        Basket Preset: [CLICK] DPad Right
 
     Outtake Claw:
         Claw Toggle: [CLICK] Right Bumper

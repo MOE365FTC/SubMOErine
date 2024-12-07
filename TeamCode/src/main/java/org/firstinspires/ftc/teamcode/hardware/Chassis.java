@@ -33,10 +33,11 @@ public class Chassis {
         backRightMotor = hardwareMap.get(DcMotor.class, "BRM");
 
         leftOdo = hardwareMap.get(DcMotorEx.class, "BLM"); //odo encoders are on motor ports CHECK
-        rightOdo = hardwareMap.get(DcMotorEx.class, "BRM");
-        strafeOdo = hardwareMap.get(DcMotorEx.class, "FRM");
+        rightOdo = hardwareMap.get(DcMotorEx.class, "FRM");
+        strafeOdo = hardwareMap.get(DcMotorEx.class, "BRM");
 
-        frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -46,8 +47,8 @@ public class Chassis {
 
         //IMU initialization
         imu = hardwareMap.get(IMU.class, "imu");
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.DOWN;
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.FORWARD;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.UP;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
         imu.initialize(new IMU.Parameters(orientationOnRobot));
 
@@ -58,10 +59,7 @@ public class Chassis {
         double y = -gamepad1.left_stick_y;
         double x = gamepad1.left_stick_x;
         double rx = gamepad1.right_stick_x;
-
-        if(gamepad1.right_stick_button) { //resets field-centric drive heading (offset = current heading)
-            headingOffset = -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
-        }
+        headingOffset = -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
 
         double botHeading = Math.toRadians(-imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) - headingOffset);
 

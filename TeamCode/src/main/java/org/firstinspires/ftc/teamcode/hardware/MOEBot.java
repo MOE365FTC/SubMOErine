@@ -19,6 +19,7 @@ public class MOEBot {
         chassis = new Chassis(hardwareMap, gamepad1);
         intake = new Intake(hardwareMap, gamepad1, gamepad2, telemetry);
         outtake = new Outtake(hardwareMap, gamepad1, gamepad2, telemetry, isAuton, true);
+
         ascent = new Ascent(hardwareMap, gamepad1, gamepad2, telemetry, isAuton);
     }
 }

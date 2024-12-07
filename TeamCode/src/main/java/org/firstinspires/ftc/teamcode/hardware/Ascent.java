@@ -12,6 +12,7 @@ public class Ascent {
 
     //PRESETS
     // FIXME EVERYTHING IS -1 [DO NOT USE]
+
     public int ASCENT_TOP = 3400;
 
     public double ASCENT_MOTOR_POWER = 0.8;

@@ -19,5 +19,6 @@ public class AscentPositionTest extends OpMode {
     @Override
     public void loop() {
         ascent.testMotorActuate(gamepad1.left_stick_y);
+
     }
 }

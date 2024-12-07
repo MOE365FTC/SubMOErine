@@ -107,6 +107,7 @@ public class Outtake {
     public void testMotorActuate(double pos) {
 //        position += (int)pos;
 //
+
 //        outtakeSlides.setTargetPosition(position);
         outtakeSlides.setPower(-pos);
         outtakeClaw.setPosition(ClawClose);

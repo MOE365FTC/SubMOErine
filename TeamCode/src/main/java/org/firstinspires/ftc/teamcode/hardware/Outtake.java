@@ -22,10 +22,10 @@ public class Outtake {
     // PRESETS
     // TODO MAKE THIS STATIC ASAP AND CHANGE VALUES!!
     // FIXME EVERYTHING IS -1 [DO NOT RUN]
-    public final int OuttakeSlideBase = 0, OuttakeSlideRung = 1200, OuttakeSlideScoreRung = 1500, OuttakeSlideBasket = 2000;
+    public final int OuttakeSlideBase = 0, OuttakeSlideRung = 1900, OuttakeSlideScoreRung = 3600, OuttakeSlideBasket = 8000;
     public final double ClawOpen = 0.5, ClawClose = 0.28;
     public boolean g2RightBumperPressed = false;
-    public final double TiltWall = 0.95, TiltChamber = 0.1 , TiltBasket = 0.7, TiltTransfer = 0;
+    public final double TiltWall = 0.95, TiltChamber = 0.4 , TiltBasket = 0.7, TiltTransfer = 0;
 
     public double OUTTAKE_MOTOR_POWER = 1;
 
@@ -50,7 +50,7 @@ public class Outtake {
                 outtakeSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 outtakeSlides.setTargetPosition(0);
             }
-            outtakeSlides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            outtakeSlides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
     }
 

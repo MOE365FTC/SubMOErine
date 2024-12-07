@@ -45,5 +45,5 @@ dependencies {
 
     //pedro pathing
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.7'
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib:2.0.0'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib'
 }

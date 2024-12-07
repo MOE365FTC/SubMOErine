@@ -13,12 +13,12 @@ public class MOEBot {
     public Chassis chassis;
     public Intake intake;
     public Outtake outtake;
+    public Ascent ascent;
 
-    public MOEBot(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry) {
-
+    public MOEBot(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry, boolean isAuton) {
         chassis = new Chassis(hardwareMap, gamepad1);
         intake = new Intake(hardwareMap, gamepad1, gamepad2, telemetry);
-        outtake = new Outtake(hardwareMap, gamepad1, gamepad2, telemetry);
+        outtake = new Outtake(hardwareMap, gamepad1, gamepad2, telemetry, isAuton, true);
+        ascent = new Ascent(hardwareMap, gamepad1, gamepad2, telemetry, isAuton);
     }
-
 }

@@ -9,9 +9,11 @@ import org.firstinspires.ftc.teamcode.hardware.MOEBot;
 public class Teleop extends OpMode {
     MOEBot robot;
 
+    public static boolean isAuton = true;
+
     @Override
     public void init() {
-        robot = new MOEBot(hardwareMap, gamepad1, gamepad2, telemetry);
+        robot = new MOEBot(hardwareMap, gamepad1, gamepad2, telemetry, isAuton);
     }
 
     @Override
@@ -21,5 +23,6 @@ public class Teleop extends OpMode {
         robot.chassis.fieldCentricDrive();
         robot.outtake.actuate();
         robot.intake.actuate();
+        robot.ascent.actuate();
     }
 }

@@ -18,7 +18,7 @@ public class ServoTest extends OpMode {
     @Override
     public void init() {
         intake = new Intake(hardwareMap, gamepad1, gamepad2, telemetry);
-        outtake = new Outtake(hardwareMap, gamepad1, gamepad2, telemetry);
+        outtake = new Outtake(hardwareMap, gamepad1, gamepad2, telemetry, false, false);
     }
 
     @Override

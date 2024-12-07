@@ -22,7 +22,7 @@ public class Intake {
     // TODO MAKE THIS STATIC ASAP AND CHANGE VALUES!!
     // FIXME EVERYTHING IS -1 [DO NOT RUN]
     public final double YawBase = 0.45, YawSample = 1.0, YawHumanPlayer = 0.25, YawTransfer = 0.0;
-    public final double PitchBase = 0.09, PitchSample = 0.98, PitchHumanPlayer = 0.8;
+    public final double PitchBase = 0.05, PitchSample = 1, PitchHumanPlayer = 0.8;
     public final double LinkageOut = 0.18, LinkageIn = 0.73, LinkageTransfer = 0.5;
     public final double WristAxial = 0.0, WristTransverse = 0.3;
     public final double ClawOpen = 0.3, ClawClose = 0.0;

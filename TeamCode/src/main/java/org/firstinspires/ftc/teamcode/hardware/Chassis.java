@@ -20,7 +20,10 @@ public class Chassis {
     Gamepad gamepad1;
     static IMU imu; //A static IMU object that shares heading between TeleOp and Auton
     double headingOffset = 0; //stores the heading the robot started the opmode with (corrects for error)
+    double startHeadingOffset = 0;
     double driveSpeed = 1.0;
+    public boolean g1LeftBumperPressed = false;
+    public boolean robotCentric = false;
 
     //Teleop Constructor
     public Chassis(HardwareMap hardwareMap, Gamepad gamepad1){
@@ -52,13 +55,23 @@ public class Chassis {
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
         imu.initialize(new IMU.Parameters(orientationOnRobot));
 
+        startHeadingOffset = -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
     }
 
     public void fieldCentricDrive(){
+        if(this.gamepad1.left_bumper && !g1LeftBumperPressed) {
+            g1LeftBumperPressed = true;
+            robotCentric = !robotCentric;
+        }else if(!this.gamepad1.left_bumper) {
+            g1LeftBumperPressed = false;
+        }
+
         double y = -gamepad1.left_stick_y;
         double x = gamepad1.left_stick_x;
         double rx = gamepad1.right_stick_x;
-        headingOffset = -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+
+        if(robotCentric) headingOffset = -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+        else headingOffset = startHeadingOffset;
 
         double botHeading = Math.toRadians(-imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) - headingOffset);
 

@@ -22,7 +22,7 @@ public class Outtake {
     // PRESETS
     // TODO MAKE THIS STATIC ASAP AND CHANGE VALUES!!
     // FIXME EVERYTHING IS -1 [DO NOT RUN]
-    public final int OuttakeSlideBase = 0, OuttakeSlideRung = 1900, OuttakeSlideScoreRung = 3600, OuttakeSlideBasket = 8000;
+    public final int OuttakeSlideBase = 0, OuttakeSlideRung = 720, OuttakeSlideScoreRung = 1360, OuttakeSlideBasket = 3020;
     public final double ClawOpen = 0.5, ClawClose = 0.28;
     public boolean g2RightBumperPressed = false;
     public final double TiltWall = 0.95, TiltChamber = 0.4 , TiltBasket = 0.7, TiltTransfer = 0;
@@ -42,7 +42,7 @@ public class Outtake {
         outtakeTilt = hardwareMap.get(Servo.class, "outtakeTiltServo");
         outtakeClaw = hardwareMap.get(Servo.class, "outtakeClawServo");
 
-        outtakeSlides.setDirection(DcMotorSimple.Direction.REVERSE);
+//        outtakeSlides.setDirection(DcMotorSimple.Direction.REVERSE);
         outtakeSlides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         if(actuateMotor) {
@@ -51,6 +51,7 @@ public class Outtake {
                 outtakeSlides.setTargetPosition(0);
             }
             outtakeSlides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            //outtakeSlides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
     }
 
@@ -97,6 +98,13 @@ public class Outtake {
                 break;
             }
         }
+    }
+
+    public void autonInit(){
+        outtakeSlides.setPower(OUTTAKE_MOTOR_POWER);
+        outtakeSlides.setTargetPosition(OuttakeSlideBase);
+        outtakeTilt.setPosition(0.17);
+        outtakeClaw.setPosition(ClawClose);
     }
 
     public void testActuate(double position) {

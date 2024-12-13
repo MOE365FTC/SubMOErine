@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -13,7 +14,8 @@ public class Ascent {
     //PRESETS
     // FIXME EVERYTHING IS -1 [DO NOT USE]
 
-    public int ASCENT_TOP = 3400;
+    public int ASCENT_TOP = 6000;
+    public int ASCENT_HANG = 3800;
 
     public double ASCENT_MOTOR_POWER = 0.8;
 
@@ -28,11 +30,13 @@ public class Ascent {
         this.gamepad2 = gamepad2;
         ascentMotor = hardwareMap.get(DcMotor.class, "ascentMotor");
         ascentMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        ascentMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         if(isAuton) {
             ascentMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             ascentMotor.setTargetPosition(0);
         }
+        //ascentMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         ascentMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 

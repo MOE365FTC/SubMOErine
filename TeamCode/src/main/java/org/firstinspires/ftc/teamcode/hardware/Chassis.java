@@ -42,6 +42,8 @@ public class Chassis {
         backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        strafeOdo.setDirection(DcMotorSimple.Direction.REVERSE);
+
         frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -85,12 +87,12 @@ public class Chassis {
         double backLeftPower = (rotY - rotX + rx) / denominator;
         double frontRightPower = (rotY - rotX - rx) / denominator;
         double backRightPower = (rotY + rotX - rx) / denominator;
-
+        /*
         if(gamepad1.right_bumper) //slow down button for fine-control
             driveSpeed = 0.3;
         else
             driveSpeed = 1;
-
+        */
         frontLeftMotor.setPower(frontLeftPower * driveSpeed);
         backLeftMotor.setPower(backLeftPower * driveSpeed);
         frontRightMotor.setPower(frontRightPower * driveSpeed);

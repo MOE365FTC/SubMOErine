@@ -21,7 +21,7 @@ public class AutonomousRight {
                 .waitSeconds(0.75)
 
                 // Go to first sample
-                .strafeTo(new Vector2d(24, -60))
+                .strafeTo(new Vector2d(24, -55))
                 .splineToConstantHeading(new Vector2d(48, -12), 0)
 
                 // Push the sample

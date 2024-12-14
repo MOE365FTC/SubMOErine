@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -103,6 +107,54 @@ public class Intake {
         wrist.setPosition(position);
         linkage.setPosition(position);
         intakeClaw.setPosition(position);
+    }
+
+    public void autonActuate(ArmPositions armPositions) {
+        switch (armPositions) {
+            case BASE: {
+                linkage.setPosition(LinkageIn);
+                shoulder.setPosition(YawBase);
+                elbow.setPosition(PitchBase);
+                wrist.setPosition(WristAxial);
+                break;
+            }
+
+            case SAMPLE: {
+                linkage.setPosition(LinkageOut);
+                shoulder.setPosition(YawSample);
+                elbow.setPosition(PitchSample);
+                break;
+            }
+
+            case HUMAN_PLAYER: {
+                linkage.setPosition(LinkageIn);
+                shoulder.setPosition(YawHumanPlayer);
+                elbow.setPosition(PitchHumanPlayer);
+                break;
+            }
+        }
+    }
+
+    public Action autonBase() {
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                autonActuate(ArmPositions.BASE);
+                intakeClaw.setPosition(ClawClose);
+                return false;
+            }
+        };
+    }
+
+    public Action autonSample() {
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                autonActuate(ArmPositions.SAMPLE);
+                intakeClaw.setPosition(ClawClose);
+                return false;
+            }
+        };
     }
 
 }

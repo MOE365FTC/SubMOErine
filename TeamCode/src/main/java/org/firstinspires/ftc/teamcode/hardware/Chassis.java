@@ -70,13 +70,16 @@ public class Chassis {
 
         double y = -gamepad1.left_stick_y;
         double x = gamepad1.left_stick_x;
-        double rx = gamepad1.right_stick_x;
+        double rx = 0.5 * gamepad1.right_stick_x;
 
         if(robotCentric) headingOffset = -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
         else headingOffset = startHeadingOffset;
 
         double botHeading = Math.toRadians(-imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) - headingOffset);
 
+        if(gamepad1.right_stick_button) { //resets field-centric drive heading (offset = current heading)
+            startHeadingOffset = -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+        }
 //        double botHeading = 0;
 
         double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);

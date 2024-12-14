@@ -1,5 +1,11 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
+import android.app.Notification;
+
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.*;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -122,5 +128,82 @@ public class Outtake {
         outtakeTilt.setPosition(TiltChamber);
 
         this.telemetry.addData("Outtake Position", outtakeSlides.getCurrentPosition());
+    }
+
+    public void autonActuate(OuttakeSlidePositions slidePositions) {
+        switch (slidePositions) {
+            case WALL: {
+                outtakeSlides.setTargetPosition(OuttakeSlideBase);
+                outtakeTilt.setPosition(TiltWall);
+                break;
+            }
+            case CHAMBER: {
+                outtakeSlides.setTargetPosition(OuttakeSlideRung);
+                outtakeTilt.setPosition(TiltChamber);
+                break;
+            }
+            case SCORE_CHAMBER: {
+                outtakeSlides.setTargetPosition(OuttakeSlideScoreRung);
+                outtakeTilt.setPosition(TiltChamber);
+                break;
+            }
+            case BASKET: {
+                outtakeSlides.setTargetPosition(OuttakeSlideBasket);
+                outtakeTilt.setPosition(TiltBasket);
+                break;
+            }
+        }
+    }
+
+    public Action autonWall(){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                outtakeClaw.setPosition(ClawOpen);
+                autonActuate(OuttakeSlidePositions.WALL);
+                return false;
+            }
+        };
+    }
+
+    public Action autonChamber(){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                outtakeClaw.setPosition(ClawClose);
+                if(outtakeClaw.getPosition() <= ClawClose) {
+                    autonActuate(OuttakeSlidePositions.CHAMBER);
+                    return false;
+                }
+                return true;
+            }
+        };
+    }
+
+    public Action autonScoreChamber(){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                outtakeClaw.setPosition(ClawClose);
+                autonActuate(OuttakeSlidePositions.SCORE_CHAMBER);
+//                outtakeSlides.isBusy()
+                return false;
+            }
+        };
+    }
+
+    public Action autonBasket(){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                autonActuate(OuttakeSlidePositions.BASKET);
+                if(!outtakeSlides.isBusy()){
+                    outtakeClaw.setPosition(ClawOpen);
+                    return false;
+                }else {
+                    return true;
+                }
+            }
+        };
     }
 }

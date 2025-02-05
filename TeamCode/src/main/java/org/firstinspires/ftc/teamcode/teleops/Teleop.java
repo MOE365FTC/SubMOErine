@@ -24,6 +24,6 @@ public class Teleop extends OpMode {
         robot.chassis.fieldCentricDrive();
         robot.outtake.actuate();
         robot.intake.actuate();
-        robot.ascent.actuate();
+//        robot.ascent.actuate();
     }
 }

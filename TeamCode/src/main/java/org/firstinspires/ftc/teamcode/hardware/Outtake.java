@@ -1,25 +1,32 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
-import android.app.Notification;
-
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.InstantAction;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.qualcomm.robotcore.hardware.*;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Outtake {
     //DEVICES
-    Servo outtakeClaw, outtakeTilt;
-    DcMotor outtakeSlides;
+    Servo outtakeClawRight, outtakeClawLeft;
+    Servo outtakeTiltRight, outtakeTiltLeft;
+    Servo outtakeWrist;
+    DcMotor outtakeSlidesRight, outtakeSlidesLeft;
     
     public enum OuttakeSlidePositions {
         WALL,
-        CHAMBER,
         SCORE_CHAMBER,
-        BASKET
+        BASKET,
+        TRANSFER
     }
 
 
@@ -28,94 +35,138 @@ public class Outtake {
     // PRESETS
     // TODO MAKE THIS STATIC ASAP AND CHANGE VALUES!!
     // FIXME EVERYTHING IS -1 [DO NOT RUN]
-    public final int OuttakeSlideBase = 0, OuttakeSlideRung = 720, OuttakeSlideScoreRung = 1360, OuttakeSlideBasket = 3020;
-    public final double ClawOpen = 0.5, ClawClose = 0.28;
+    public final int OuttakeSlideBase = 0, OuttakeSlideScoreRung = 1300, OuttakeSlideBasket = 2400, OuttakeSlideTransfer = 500, OuttakeSlideMax = 3200;
+    public final double ClawOpenRight = 0.7, ClawCloseRight = 0.87;
     public boolean g2RightBumperPressed = false;
-    public final double TiltWall = 0.95, TiltChamber = 0.4 , TiltBasket = 0.7, TiltTransfer = 0;
-
+    public static double TiltWallRight = 0.15, TiltChamberRight = 0.97, TiltBasketRight = 0, TiltTransferRight = 0.6;
+    public final double TiltWallLeft = 1 - TiltWallRight, TiltChamberLeft = 1 - TiltChamberRight , TiltBasketLeft = 1 - TiltBasketRight, TiltTransferLeft = 1 - TiltTransferRight;
+    // TODO REMOVE INTERMEDIATE & CLAW
+    public final double WristWall = 0.4, WristChamber = 0.05, WristBasket = 0.3, WristTransfer = 0.5;
     public double OUTTAKE_MOTOR_POWER = 1;
 
-    int position = 0;
+    public static double ELAPSED_TIME_CHAMBER = 0.25;
+
+    public List<Action> runningActions = new ArrayList<>();
 
     //USAGE
     Gamepad gamepad1, gamepad2;
     Telemetry telemetry;
+    ElapsedTime runTime = new ElapsedTime();
+
     public Outtake (HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry, boolean isAuton, boolean actuateMotor) {
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         this.telemetry = telemetry;
-        outtakeSlides = hardwareMap.get(DcMotor.class, "outtakeSlideMotor");
-        outtakeTilt = hardwareMap.get(Servo.class, "outtakeTiltServo");
-        outtakeClaw = hardwareMap.get(Servo.class, "outtakeClawServo");
+        outtakeSlidesRight = hardwareMap.get(DcMotor.class, "SlidesRight");
+        outtakeSlidesLeft = hardwareMap.get(DcMotor.class, "SlidesLeft");
+        outtakeTiltRight = hardwareMap.get(Servo.class, "ShoulderRight");
+        outtakeTiltLeft = hardwareMap.get(Servo.class, "ShoulderLeft");
 
-//        outtakeSlides.setDirection(DcMotorSimple.Direction.REVERSE);
-        outtakeSlides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        outtakeClawRight = hardwareMap.get(Servo.class, "OuttakeClaw");
+
+        outtakeWrist = hardwareMap.get(Servo.class, "OuttakeWrist");
+
+        outtakeSlidesRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        outtakeSlidesRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        outtakeSlidesLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         if(actuateMotor) {
             if (isAuton) {
-                outtakeSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                outtakeSlides.setTargetPosition(0);
+                outtakeSlidesRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                outtakeSlidesRight.setTargetPosition(0);
+
+                outtakeSlidesLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                outtakeSlidesLeft.setTargetPosition(0);
             }
-            outtakeSlides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            //outtakeSlides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            outtakeSlidesRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            outtakeSlidesLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+//            outtakeSlidesRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//            outtakeSlidesLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
     }
 
     public void actuate() {
-        outtakeSlides.setPower(OUTTAKE_MOTOR_POWER);
+        outtakeSlidesRight.setPower(OUTTAKE_MOTOR_POWER);
+        outtakeSlidesLeft.setPower(OUTTAKE_MOTOR_POWER);
+
         if(this.gamepad2.dpad_down)  curOuttakePos = OuttakeSlidePositions.WALL;
-        if(this.gamepad2.dpad_left)  curOuttakePos = OuttakeSlidePositions.CHAMBER;
         if(this.gamepad2.dpad_up)    curOuttakePos = OuttakeSlidePositions.SCORE_CHAMBER;
         if(this.gamepad2.dpad_right) curOuttakePos = OuttakeSlidePositions.BASKET;
 
         if(this.gamepad2.right_bumper && !g2RightBumperPressed) {
             g2RightBumperPressed = true;
             isClawOpen = !isClawOpen;
-        }
-        else if(!this.gamepad2.right_bumper) {
+        } else if(!this.gamepad2.right_bumper) {
             g2RightBumperPressed = false;
         }
-        if(isClawOpen) outtakeClaw.setPosition(ClawOpen);
-        else           outtakeClaw.setPosition(ClawClose);
+        if(isClawOpen) {
+            outtakeClawRight.setPosition(ClawOpenRight);
+        } else {
+            outtakeClawRight.setPosition(ClawCloseRight);
+        }
 
         this.telemetry.addData("outPos", curOuttakePos);
-        this.telemetry.addData("currentPosition", outtakeSlides.getCurrentPosition());
-        this.telemetry.addData("targetPosition", outtakeSlides.getTargetPosition());
+        this.telemetry.addData("currentPosition", outtakeSlidesRight.getCurrentPosition());
+        this.telemetry.addData("targetPosition", outtakeSlidesRight.getTargetPosition());
 
         switch (curOuttakePos) {
             case WALL: {
-                outtakeSlides.setTargetPosition(OuttakeSlideBase);
-                outtakeTilt.setPosition(TiltWall);
+                outtakeSlidesRight.setTargetPosition(OuttakeSlideBase);
+                outtakeSlidesLeft.setTargetPosition(OuttakeSlideBase);
+                outtakeTiltRight.setPosition(TiltWallRight);
+                outtakeTiltLeft.setPosition(TiltWallLeft);
+                outtakeWrist.setPosition(WristWall);
                 break;
             }
-            case CHAMBER: {
-                outtakeSlides.setTargetPosition(OuttakeSlideRung);
-                outtakeTilt.setPosition(TiltChamber);
-                break;
-            }
+
             case SCORE_CHAMBER: {
-                outtakeSlides.setTargetPosition(OuttakeSlideScoreRung);
-                outtakeTilt.setPosition(TiltChamber);
+                runTime.reset();
+                outtakeSlidesRight.setTargetPosition(OuttakeSlideScoreRung);
+                outtakeSlidesLeft.setTargetPosition(OuttakeSlideScoreRung);
+                outtakeTiltRight.setPosition(TiltChamberRight);
+                outtakeTiltLeft.setPosition(TiltChamberLeft);
+                outtakeWrist.setPosition(WristChamber);
                 break;
             }
+
             case BASKET: {
-                outtakeSlides.setTargetPosition(OuttakeSlideBasket);
-                outtakeTilt.setPosition(TiltBasket);
+                outtakeSlidesRight.setTargetPosition(OuttakeSlideBasket);
+                outtakeSlidesLeft.setTargetPosition(OuttakeSlideBasket);
+                outtakeTiltRight.setPosition(TiltBasketRight);
+                outtakeTiltLeft.setPosition(TiltBasketLeft);
+                outtakeWrist.setPosition(WristBasket);
+                break;
+            }
+
+            case TRANSFER: {
+                outtakeSlidesRight.setTargetPosition(OuttakeSlideTransfer);
+                outtakeSlidesLeft.setTargetPosition(OuttakeSlideTransfer);
+                outtakeTiltRight.setPosition(TiltTransferRight);
+                outtakeTiltLeft.setPosition(TiltTransferLeft);
+                outtakeWrist.setPosition(WristTransfer);
                 break;
             }
         }
     }
 
     public void autonInit(){
-        outtakeSlides.setPower(OUTTAKE_MOTOR_POWER);
-        outtakeSlides.setTargetPosition(OuttakeSlideBase);
-        outtakeTilt.setPosition(0.17);
-        outtakeClaw.setPosition(ClawClose);
+        outtakeSlidesRight.setPower(OUTTAKE_MOTOR_POWER);
+        outtakeSlidesRight.setTargetPosition(OuttakeSlideBase);
+
+        outtakeSlidesLeft.setPower(OUTTAKE_MOTOR_POWER);
+        outtakeSlidesLeft.setTargetPosition(OuttakeSlideBase);
+
+//        outtakeTilt.setPosition(0.17);
+        outtakeClawRight.setPosition(ClawCloseRight);
     }
 
     public void testActuate(double position) {
-        outtakeClaw.setPosition(position);
-        outtakeTilt.setPosition(position);
+        outtakeClawRight.setPosition(position);
+        outtakeClawLeft.setPosition(position);
+        outtakeTiltRight.setPosition(position);
+        outtakeTiltLeft.setPosition(position);
+        outtakeWrist.setPosition(position);
     }
 
     public void testMotorActuate(double pos) {
@@ -123,33 +174,55 @@ public class Outtake {
 //
 
 //        outtakeSlides.setTargetPosition(position);
-        outtakeSlides.setPower(-pos);
-        outtakeClaw.setPosition(ClawClose);
-        outtakeTilt.setPosition(TiltChamber);
 
-        this.telemetry.addData("Outtake Position", outtakeSlides.getCurrentPosition());
+        if(Math.abs(pos) < 0.1) pos = -0.1;
+        outtakeSlidesRight.setPower(-pos);
+        outtakeSlidesLeft.setPower(-pos);
+        outtakeClawRight.setPosition(ClawCloseRight);
+        outtakeTiltRight.setPosition(TiltChamberRight);
+        outtakeTiltLeft.setPosition(TiltChamberLeft);
+        outtakeWrist.setPosition(WristChamber);
+
+        this.telemetry.addData("Outtake Position Right", outtakeSlidesRight.getCurrentPosition());
+        this.telemetry.addData("Outtake Position Left", outtakeSlidesLeft.getCurrentPosition());
     }
 
     public void autonActuate(OuttakeSlidePositions slidePositions) {
         switch (slidePositions) {
             case WALL: {
-                outtakeSlides.setTargetPosition(OuttakeSlideBase);
-                outtakeTilt.setPosition(TiltWall);
+                outtakeSlidesRight.setTargetPosition(OuttakeSlideBase);
+                outtakeSlidesLeft.setTargetPosition(OuttakeSlideBase);
+                outtakeTiltRight.setPosition(TiltWallRight);
+                outtakeTiltLeft.setPosition(TiltWallLeft);
+                outtakeWrist.setPosition(WristWall);
                 break;
             }
-            case CHAMBER: {
-                outtakeSlides.setTargetPosition(OuttakeSlideRung);
-                outtakeTilt.setPosition(TiltChamber);
-                break;
-            }
+            
             case SCORE_CHAMBER: {
-                outtakeSlides.setTargetPosition(OuttakeSlideScoreRung);
-                outtakeTilt.setPosition(TiltChamber);
+                runTime.reset();
+                outtakeSlidesRight.setTargetPosition(OuttakeSlideScoreRung);
+                outtakeSlidesLeft.setTargetPosition(OuttakeSlideScoreRung);
+                outtakeTiltRight.setPosition(TiltChamberRight);
+                outtakeTiltLeft.setPosition(TiltChamberLeft);
+                outtakeWrist.setPosition(WristChamber);
                 break;
             }
+
             case BASKET: {
-                outtakeSlides.setTargetPosition(OuttakeSlideBasket);
-                outtakeTilt.setPosition(TiltBasket);
+                outtakeSlidesRight.setTargetPosition(OuttakeSlideBasket);
+                outtakeSlidesLeft.setTargetPosition(OuttakeSlideBasket);
+                outtakeTiltRight.setPosition(TiltBasketRight);
+                outtakeTiltLeft.setPosition(TiltBasketLeft);
+                outtakeWrist.setPosition(WristBasket);
+                break;
+            }
+
+            case TRANSFER: {
+                outtakeSlidesRight.setTargetPosition(OuttakeSlideTransfer);
+                outtakeSlidesLeft.setTargetPosition(OuttakeSlideTransfer);
+                outtakeTiltRight.setPosition(TiltTransferRight);
+                outtakeTiltLeft.setPosition(TiltTransferLeft);
+                outtakeWrist.setPosition(WristTransfer);
                 break;
             }
         }
@@ -159,23 +232,22 @@ public class Outtake {
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                outtakeClaw.setPosition(ClawOpen);
+                outtakeTiltRight.setPosition(TiltWallRight);
+                outtakeTiltLeft.setPosition(TiltWallLeft);
+                outtakeClawRight.setPosition(ClawOpenRight);
+                outtakeWrist.setPosition(WristWall);
                 autonActuate(OuttakeSlidePositions.WALL);
                 return false;
             }
         };
     }
 
-    public Action autonChamber(){
+    public Action openClaw(){
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                outtakeClaw.setPosition(ClawClose);
-                if(outtakeClaw.getPosition() <= ClawClose) {
-                    autonActuate(OuttakeSlidePositions.CHAMBER);
-                    return false;
-                }
-                return true;
+                outtakeClawRight.setPosition(ClawOpenRight);
+                return false;
             }
         };
     }
@@ -184,9 +256,8 @@ public class Outtake {
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                outtakeClaw.setPosition(ClawClose);
+                outtakeClawRight.setPosition(ClawCloseRight);
                 autonActuate(OuttakeSlidePositions.SCORE_CHAMBER);
-//                outtakeSlides.isBusy()
                 return false;
             }
         };
@@ -197,12 +268,7 @@ public class Outtake {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 autonActuate(OuttakeSlidePositions.BASKET);
-                if(!outtakeSlides.isBusy()){
-                    outtakeClaw.setPosition(ClawOpen);
-                    return false;
-                }else {
-                    return true;
-                }
+                return false;
             }
         };
     }

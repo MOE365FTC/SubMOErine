@@ -42,7 +42,6 @@ public class SubMOErineRight extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPos);
         TrajectoryActionBuilder rightTrajectory = drive.actionBuilder(startPos)
                 // Place specimens
-                .afterTime(0,robot.outtake.autonChamber()) //outtake arm position to before scoring
                 .strafeTo(placeFirstSpecimen) // go to first specimen position
                 .afterTime(0,robot.outtake.autonScoreChamber()) //raise outtake arm to score sample
                 .afterTime(0.75,robot.outtake.autonWall()) //return outtake arm for wall specimen pickup after scoring specimen

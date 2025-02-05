@@ -12,25 +12,23 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Intake {
     //DEVICES
-    Servo shoulder, elbow, wrist;
+    Servo elbow, wrist;
     Servo linkage;
     Servo intakeClaw;
 
     public enum ArmPositions {
         BASE,
         SAMPLE,
-        HUMAN_PLAYER
+        TRANSFER
     }
 
     //PRESETS
     // TODO MAKE THIS STATIC ASAP AND CHANGE VALUES!!
     // FIXME EVERYTHING IS -1 [DO NOT RUN]
-
-    public final double YawBase = 0.45, YawSample = 1.0, YawHumanPlayer = 0.25, YawTransfer = 0.0;
-    public final double PitchBase = 0.05, PitchSample = 1, PitchHumanPlayer = 0.8;
-    public final double LinkageOut = 0.18, LinkageIn = 0.73, LinkageTransfer = 0.5;
-    public final double WristAxial = 0.0, WristTransverse = 0.3;
-    public final double ClawOpen = 0.3, ClawClose = 0.0;
+    public final double PitchBase = 0.02, PitchSample = 0.97, PitchTransfer = 0.02;
+    public final double LinkageOut = 0.11, LinkageIn = 0.95;
+    public final double WristAxial = 0.81, WristTransverse = 0.49;
+    public final double ClawOpen = 0.3, ClawClose = 0.05;
 
     public ArmPositions curArmPosition = ArmPositions.BASE;
 
@@ -45,11 +43,10 @@ public class Intake {
     public Intake(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry) {
         this.gamepad1 = gamepad1;
 
-        shoulder = hardwareMap.get(Servo.class, "shoulderServo");
-        elbow = hardwareMap.get(Servo.class, "elbowServo");
-        wrist = hardwareMap.get(Servo.class, "wristServo");
-        linkage = hardwareMap.get(Servo.class, "linkageServo");
-        intakeClaw = hardwareMap.get(Servo.class, "intakeClawServo");
+        elbow = hardwareMap.get(Servo.class, "IntakeElbow");
+        wrist = hardwareMap.get(Servo.class, "IntakeWrist");
+        linkage = hardwareMap.get(Servo.class, "IntakeLinkage");
+        intakeClaw = hardwareMap.get(Servo.class, "IntakeClaw");
     }
 
     public void actuate() {
@@ -58,7 +55,7 @@ public class Intake {
             curArmPosition = ArmPositions.SAMPLE;
             isClawOpen = true;
         }
-        if(this.gamepad1.dpad_left) curArmPosition = ArmPositions.HUMAN_PLAYER;
+        if(this.gamepad1.dpad_left) curArmPosition = ArmPositions.TRANSFER;
 
         if(this.gamepad1.b && curArmPosition == ArmPositions.SAMPLE) wrist.setPosition(WristAxial);
         if(this.gamepad1.x && curArmPosition == ArmPositions.SAMPLE) wrist.setPosition(WristTransverse);
@@ -79,7 +76,6 @@ public class Intake {
         switch (curArmPosition) {
             case BASE: {
                 linkage.setPosition(LinkageIn);
-                shoulder.setPosition(YawBase);
                 elbow.setPosition(PitchBase);
                 wrist.setPosition(WristAxial);
                 break;
@@ -87,22 +83,20 @@ public class Intake {
 
             case SAMPLE: {
                 linkage.setPosition(LinkageOut);
-                shoulder.setPosition(YawSample);
                 elbow.setPosition(PitchSample);
                 break;
             }
 
-            case HUMAN_PLAYER: {
+            case TRANSFER: {
                 linkage.setPosition(LinkageIn);
-                shoulder.setPosition(YawHumanPlayer);
-                elbow.setPosition(PitchHumanPlayer);
+                elbow.setPosition(PitchTransfer);
+                wrist.setPosition(WristAxial);
                 break;
             }
         }
     }
 
     public void testActuate(double position) {
-        shoulder.setPosition(position);
         elbow.setPosition(position);
         wrist.setPosition(position);
         linkage.setPosition(position);
@@ -113,7 +107,6 @@ public class Intake {
         switch (armPositions) {
             case BASE: {
                 linkage.setPosition(LinkageIn);
-                shoulder.setPosition(YawBase);
                 elbow.setPosition(PitchBase);
                 wrist.setPosition(WristAxial);
                 break;
@@ -121,15 +114,14 @@ public class Intake {
 
             case SAMPLE: {
                 linkage.setPosition(LinkageOut);
-                shoulder.setPosition(YawSample);
                 elbow.setPosition(PitchSample);
                 break;
             }
 
-            case HUMAN_PLAYER: {
+            case TRANSFER: {
                 linkage.setPosition(LinkageIn);
-                shoulder.setPosition(YawHumanPlayer);
-                elbow.setPosition(PitchHumanPlayer);
+                elbow.setPosition(PitchTransfer);
+                wrist.setPosition(WristAxial);
                 break;
             }
         }

@@ -1,61 +1,88 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Ascent {
     //DEVICES
-    DcMotor ascentMotor;
+    DcMotor ascentLeft, ascentRight;
+    Servo hopLeft, hopRight;
 
     //PRESETS
     // FIXME EVERYTHING IS -1 [DO NOT USE]
 
-    public int ASCENT_TOP = 6000;
-    public int ASCENT_HANG = 3800;
-
+    public int ASCENT_TOP = -1;
     public double ASCENT_MOTOR_POWER = 0.8;
+    public double HOP_TOP_LEFT = 0.85, HOP_BOTTOM_LEFT = 0.05;
+    public double HOP_TOP_RIGHT = 0.93, HOP_BOTTOM_RIGHT = 0.1;
+    public static double SPEED = 0.5;
+    public double hopPosition = 0;
 
     //USAGE
     Gamepad gamepad1, gamepad2;
     Telemetry telemetry;
-    int position = 0;
 
     public Ascent (HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry, boolean isAuton) {
         this.telemetry = telemetry;
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
-        ascentMotor = hardwareMap.get(DcMotor.class, "ascentMotor");
-        ascentMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        ascentMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        ascentRight = hardwareMap.get(DcMotor.class, "AscentRight");
+        ascentLeft = hardwareMap.get(DcMotor.class, "AscentLeft");
+
+        hopRight = hardwareMap.get(Servo.class, "HopRight");
+        hopLeft = hardwareMap.get(Servo.class, "HopLeft");
+
+        ascentRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        ascentMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        ascentLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        ascentMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+//        hopRight.setDirection(DcMotorSimple.Direction.REVERSE);
+//        hopLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
         if(isAuton) {
-            ascentMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            ascentMotor.setTargetPosition(0);
+            ascentRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            ascentRight.setTargetPosition(0);
+
+            ascentLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            ascentLeft.setTargetPosition(0);
         }
         //ascentMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        ascentMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        ascentRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        ascentLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
+
     public void actuate() {
-        ascentMotor.setPower(this.gamepad2.right_stick_y);
+        ascentRight.setPower(this.gamepad2.right_stick_y);
+        ascentLeft.setPower(this.gamepad2.right_stick_y);
+        if(gamepad1.x) {
+            hopRight.setPosition(HOP_TOP_RIGHT);
+            hopLeft.setPosition(HOP_TOP_LEFT);
+        } else if(gamepad1.b){
+            hopRight.setPosition(HOP_BOTTOM_RIGHT);
+            hopLeft.setPosition(HOP_BOTTOM_LEFT);
+        }
     }
 
     public void autonActuate() {
-        ascentMotor.setTargetPosition(ASCENT_TOP);
-        ascentMotor.setPower(ASCENT_MOTOR_POWER);
+        ascentRight.setTargetPosition(ASCENT_TOP);
+        ascentRight.setPower(ASCENT_MOTOR_POWER);
     }
 
     public void testMotorActuate(double pos) {
 //        position += (int)pos;
 
 //        ascentMotor.setTargetPosition(position);
-        ascentMotor.setPower(-pos);
+        ascentRight.setPower(-pos);
+        ascentLeft.setPower(-pos);
 
-        this.telemetry.addData("Ascent Position:", ascentMotor.getCurrentPosition());
-        this.telemetry.addData("Ascent Power", ascentMotor.getPower());
+        this.telemetry.addData("Ascent Position:", ascentRight.getCurrentPosition());
+        this.telemetry.addData("Ascent Power", ascentRight.getPower());
     }
 }

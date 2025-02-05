@@ -25,5 +25,6 @@ public class Teleop extends OpMode {
         robot.outtake.actuate();
         robot.intake.actuate();
 //        robot.ascent.actuate();
+
     }
 }

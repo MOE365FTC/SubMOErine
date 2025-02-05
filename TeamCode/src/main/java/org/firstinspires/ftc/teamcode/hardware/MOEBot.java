@@ -15,6 +15,7 @@ public class MOEBot {
     public Outtake outtake;
     public Ascent ascent;
 
+
     public MOEBot(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry, boolean isAuton) {
         chassis = new Chassis(hardwareMap, gamepad1);
         intake = new Intake(hardwareMap, gamepad1, gamepad2, telemetry);

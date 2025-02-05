@@ -49,6 +49,7 @@ public class Intake {
         intakeClaw = hardwareMap.get(Servo.class, "IntakeClaw");
     }
 
+
     public void actuate() {
         if(this.gamepad1.dpad_down) curArmPosition = ArmPositions.BASE;
         if(this.gamepad1.dpad_up){

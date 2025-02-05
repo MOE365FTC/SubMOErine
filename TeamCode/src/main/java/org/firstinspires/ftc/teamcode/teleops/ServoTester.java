@@ -14,6 +14,7 @@ public class ServoTester extends OpMode {
             "OuttakeClaw", "OuttakeWrist"
     };
 
+
     public static double position = 0.0;
     public boolean dpad_up_pressed = false, dpad_down_pressed = false;
 

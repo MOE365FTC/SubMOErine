@@ -39,6 +39,7 @@ public class Outtake {
     public final double ClawOpenRight = 0.7, ClawCloseRight = 0.87;
     public boolean g2RightBumperPressed = false;
     public static double TiltWallRight = 0.15, TiltChamberRight = 0.97, TiltBasketRight = 0, TiltTransferRight = 0.6;
+
     public final double TiltWallLeft = 1 - TiltWallRight, TiltChamberLeft = 1 - TiltChamberRight , TiltBasketLeft = 1 - TiltBasketRight, TiltTransferLeft = 1 - TiltTransferRight;
     // TODO REMOVE INTERMEDIATE & CLAW
     public final double WristWall = 0.4, WristChamber = 0.05, WristBasket = 0.3, WristTransfer = 0.5;

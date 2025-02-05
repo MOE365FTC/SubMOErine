@@ -26,6 +26,7 @@ public class Ascent {
     Gamepad gamepad1, gamepad2;
     Telemetry telemetry;
 
+
     public Ascent (HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry, boolean isAuton) {
         this.telemetry = telemetry;
         this.gamepad1 = gamepad1;

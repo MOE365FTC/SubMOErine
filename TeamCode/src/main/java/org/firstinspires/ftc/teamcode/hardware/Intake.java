@@ -18,6 +18,7 @@ public class Intake {
 
     public enum ArmPositions {
         BASE,
+        HOVER,
         SAMPLE,
         TRANSFER
     }
@@ -25,7 +26,7 @@ public class Intake {
     //PRESETS
     // TODO MAKE THIS STATIC ASAP AND CHANGE VALUES!!
     // FIXME EVERYTHING IS -1 [DO NOT RUN]
-    public final double PitchBase = 0.02, PitchSample = 0.97, PitchTransfer = 0.02;
+    public final double PitchBase = 0.02, PitchSample = 0.97, PitchHover = 0.87, PitchTransfer = 0.02;
     public final double LinkageOut = 0.11, LinkageIn = 0.95;
     public final double WristAxial = 0.81, WristTransverse = 0.49;
     public final double ClawOpen = 0.3, ClawClose = 0.05;
@@ -53,7 +54,7 @@ public class Intake {
     public void actuate() {
         if(this.gamepad1.dpad_down) curArmPosition = ArmPositions.BASE;
         if(this.gamepad1.dpad_up){
-            curArmPosition = ArmPositions.SAMPLE;
+            curArmPosition = ArmPositions.HOVER;
             isClawOpen = true;
         }
         if(this.gamepad1.dpad_left) curArmPosition = ArmPositions.TRANSFER;
@@ -71,27 +72,36 @@ public class Intake {
         else if(!this.gamepad1.right_bumper) {
             g1RightBumperPressed = false;
         }
-        if(isClawOpen)  intakeClaw.setPosition(ClawOpen);
+        if(isClawOpen && curArmPosition == ArmPositions.HOVER)  curArmPosition = ArmPositions.SAMPLE;
+        else if(isClawOpen)  intakeClaw.setPosition(ClawOpen);
         else            intakeClaw.setPosition(ClawClose);
 
         switch (curArmPosition) {
             case BASE: {
                 linkage.setPosition(LinkageIn);
                 elbow.setPosition(PitchBase);
-                wrist.setPosition(WristAxial);
+                wrist.setPosition(WristTransverse);
+                break;
+            }
+
+            case HOVER: {
+                linkage.setPosition(LinkageOut);
+                elbow.setPosition(PitchHover);
                 break;
             }
 
             case SAMPLE: {
                 linkage.setPosition(LinkageOut);
                 elbow.setPosition(PitchSample);
+                isClawOpen = false;
+                intakeClaw.setPosition(ClawClose);
                 break;
             }
 
             case TRANSFER: {
                 linkage.setPosition(LinkageIn);
                 elbow.setPosition(PitchTransfer);
-                wrist.setPosition(WristAxial);
+                wrist.setPosition(WristTransverse);
                 break;
             }
         }

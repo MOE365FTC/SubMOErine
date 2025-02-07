@@ -19,8 +19,6 @@ public class Ascent {
     public double ASCENT_MOTOR_POWER = 0.8;
     public double HOP_TOP_LEFT = 0.85, HOP_BOTTOM_LEFT = 0.05;
     public double HOP_TOP_RIGHT = 0.93, HOP_BOTTOM_RIGHT = 0.1;
-    public static double SPEED = 0.5;
-    public double hopPosition = 0;
 
     //USAGE
     Gamepad gamepad1, gamepad2;

@@ -4,9 +4,6 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.InstantAction;
-import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -17,7 +14,7 @@ import java.util.List;
 
 public class Outtake {
     //DEVICES
-    Servo outtakeClawRight, outtakeClawLeft;
+    Servo outtakeClaw;
     Servo outtakeTiltRight, outtakeTiltLeft;
     Servo outtakeWrist;
     DcMotor outtakeSlidesRight, outtakeSlidesLeft;
@@ -36,12 +33,10 @@ public class Outtake {
     // TODO MAKE THIS STATIC ASAP AND CHANGE VALUES!!
     // FIXME EVERYTHING IS -1 [DO NOT RUN]
     public final int OuttakeSlideBase = 0, OuttakeSlideScoreRung = 1300, OuttakeSlideBasket = 2400, OuttakeSlideTransfer = 500, OuttakeSlideMax = 3200;
-    public final double ClawOpenRight = 0.7, ClawCloseRight = 0.87;
+    public final double ClawOpen = 0.7, ClawClose = 0.87;
     public boolean g2RightBumperPressed = false;
     public static double TiltWallRight = 0.15, TiltChamberRight = 0.97, TiltBasketRight = 0, TiltTransferRight = 0.6;
-
     public final double TiltWallLeft = 1 - TiltWallRight, TiltChamberLeft = 1 - TiltChamberRight , TiltBasketLeft = 1 - TiltBasketRight, TiltTransferLeft = 1 - TiltTransferRight;
-    // TODO REMOVE INTERMEDIATE & CLAW
     public final double WristWall = 0.4, WristChamber = 0.05, WristBasket = 0.3, WristTransfer = 0.5;
     public double OUTTAKE_MOTOR_POWER = 1;
 
@@ -63,7 +58,7 @@ public class Outtake {
         outtakeTiltRight = hardwareMap.get(Servo.class, "ShoulderRight");
         outtakeTiltLeft = hardwareMap.get(Servo.class, "ShoulderLeft");
 
-        outtakeClawRight = hardwareMap.get(Servo.class, "OuttakeClaw");
+        outtakeClaw = hardwareMap.get(Servo.class, "OuttakeClaw");
 
         outtakeWrist = hardwareMap.get(Servo.class, "OuttakeWrist");
 
@@ -94,6 +89,7 @@ public class Outtake {
         if(this.gamepad2.dpad_down)  curOuttakePos = OuttakeSlidePositions.WALL;
         if(this.gamepad2.dpad_up)    curOuttakePos = OuttakeSlidePositions.SCORE_CHAMBER;
         if(this.gamepad2.dpad_right) curOuttakePos = OuttakeSlidePositions.BASKET;
+        if(this.gamepad2.dpad_left) curOuttakePos = OuttakeSlidePositions.TRANSFER;
 
         if(this.gamepad2.right_bumper && !g2RightBumperPressed) {
             g2RightBumperPressed = true;
@@ -102,9 +98,9 @@ public class Outtake {
             g2RightBumperPressed = false;
         }
         if(isClawOpen) {
-            outtakeClawRight.setPosition(ClawOpenRight);
+            outtakeClaw.setPosition(ClawOpen);
         } else {
-            outtakeClawRight.setPosition(ClawCloseRight);
+            outtakeClaw.setPosition(ClawClose);
         }
 
         this.telemetry.addData("outPos", curOuttakePos);
@@ -159,12 +155,11 @@ public class Outtake {
         outtakeSlidesLeft.setTargetPosition(OuttakeSlideBase);
 
 //        outtakeTilt.setPosition(0.17);
-        outtakeClawRight.setPosition(ClawCloseRight);
+        outtakeClaw.setPosition(ClawClose);
     }
 
     public void testActuate(double position) {
-        outtakeClawRight.setPosition(position);
-        outtakeClawLeft.setPosition(position);
+        outtakeClaw.setPosition(position);
         outtakeTiltRight.setPosition(position);
         outtakeTiltLeft.setPosition(position);
         outtakeWrist.setPosition(position);
@@ -179,7 +174,7 @@ public class Outtake {
         if(Math.abs(pos) < 0.1) pos = -0.1;
         outtakeSlidesRight.setPower(-pos);
         outtakeSlidesLeft.setPower(-pos);
-        outtakeClawRight.setPosition(ClawCloseRight);
+        outtakeClaw.setPosition(ClawClose);
         outtakeTiltRight.setPosition(TiltChamberRight);
         outtakeTiltLeft.setPosition(TiltChamberLeft);
         outtakeWrist.setPosition(WristChamber);
@@ -235,7 +230,7 @@ public class Outtake {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 outtakeTiltRight.setPosition(TiltWallRight);
                 outtakeTiltLeft.setPosition(TiltWallLeft);
-                outtakeClawRight.setPosition(ClawOpenRight);
+                outtakeClaw.setPosition(ClawOpen);
                 outtakeWrist.setPosition(WristWall);
                 autonActuate(OuttakeSlidePositions.WALL);
                 return false;
@@ -247,7 +242,7 @@ public class Outtake {
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                outtakeClawRight.setPosition(ClawOpenRight);
+                outtakeClaw.setPosition(ClawOpen);
                 return false;
             }
         };
@@ -257,7 +252,7 @@ public class Outtake {
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                outtakeClawRight.setPosition(ClawCloseRight);
+                outtakeClaw.setPosition(ClawClose);
                 autonActuate(OuttakeSlidePositions.SCORE_CHAMBER);
                 return false;
             }
